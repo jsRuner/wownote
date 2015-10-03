@@ -14,4 +14,12 @@
 
 首先需要查询api .地区切换时触发事件。
 
+查询到的事件是
+
+ PLAYER_LEAVING_WORLD
+
+ ACHIEVEMENT_EARNED：玩家获得成就时的事件
+ ACTIVE_TALENT_GROUP_CHANGED 切换专业技能或者天赋。
+ AUCTION_HOUSE_SHOW  进入拍卖行。测试一次
+
 

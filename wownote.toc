@@ -1,0 +1,7 @@
+## Interface: 11200
+## Title: 魔兽笔记插件
+## Author: hiphp
+## Notes:记录游戏中的时间轴，玩家发生了哪些事情。
+## Version: 1.0 
+wownote.lua
+wownote.xml
