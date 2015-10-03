@@ -12,7 +12,7 @@
    </Backdrop> 
    <Layers> 
       <Layer level="ARTWORK"> 
-         <FontString inherits="GameFontNormal" text="10年魔兽，爱恨情仇。影响我人生的游戏"> 
+         <FontString name="$parentTextFPS" inherits="GameFontNormal" text="10年魔兽，爱恨情仇。影响我人生的游戏"> 
             <Anchors> 
                <Anchor point="TOPLEFT" relativeTo="HelloWorldTestFrame" > 
                 <Offset x="15" y="-15" /> 
@@ -20,7 +20,7 @@
             </Anchors> 
          </FontString> 
 
-           <FontString inherits="GameFontNormal" text="今晚走出了第一步,我的第一个魔兽世界插件。"> 
+           <FontString name="$parentTextDelay" inherits="GameFontNormal" text="今晚走出了第一步,我的第一个魔兽世界插件。"> 
             <Anchors> 
                <Anchor point="TOPLEFT" relativeTo="HelloWorldTestFrame" > 
                 <Offset x="15" y="-30" /> 
@@ -28,7 +28,7 @@
             </Anchors> 
          </FontString>
 
-           <FontString inherits="GameFontNormal" text="这一刻是过去游戏以玩为主的终点，现在是研究背后技术的起点"> 
+           <FontString  name="$parentTextMoney" inherits="GameFontNormal" text="这一刻是过去游戏以玩为主的终点，现在是研究背后技术的起点"> 
             <Anchors> 
                <Anchor point="TOPLEFT" relativeTo="HelloWorldTestFrame" > 
                 <Offset x="15" y="-45" /> 
@@ -47,10 +47,10 @@
     <Scripts> 
       <OnLoad> 
          this:RegisterEvent("CHAT_MSG_SAY");
-      <!-- HelloWorldLoad();  -->
+      HelloWorldLoad(); 
       </OnLoad> 
       <OnUpdate> 
-      <!-- HelloWorldFrameUpdate();  -->
+      HelloWorldFrameUpdate(); 
       </OnUpdate> 
 
       <OnEvent> 
