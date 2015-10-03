@@ -46,7 +46,10 @@
 
     <Scripts> 
       <OnLoad> 
-         this:RegisterEvent("CHAT_MSG_SAY");
+        this:RegisterEvent("CHAT_MSG_SAY");
+        this:RegisterEvent("PLAYER_TARGET_CHANGED");
+        this:RegisterEvent("LOOT_OPEN");
+        this:RegisterEvent("BAG_UPDATE");
       HelloWorldLoad(); 
       </OnLoad> 
       <OnUpdate> 
