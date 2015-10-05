@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> 
-<Frame name="HelloWorldTestFrame" parent="UIParent" hidden="false" enableMouse="true" movable="true"> 
+<Frame name="WowNoteFrame" parent="UIParent" hidden="true" enableMouse="true" movable="true"> 
    <TitleRegion setAllPoints="true"/>
    <Size x="400" y="250" /> 
    <Anchors> 
@@ -14,7 +14,7 @@
       <Layer level="ARTWORK"> 
          <FontString name="$parentTextFPS" inherits="GameFontNormal" text="10年魔兽，爱恨情仇。影响我人生的游戏"> 
             <Anchors> 
-               <Anchor point="TOPLEFT" relativeTo="HelloWorldTestFrame" > 
+               <Anchor point="TOPLEFT" relativeTo="WowNoteFrame" > 
                 <Offset x="15" y="-15" /> 
                  </Anchor> 
             </Anchors> 
@@ -22,7 +22,7 @@
 
            <FontString name="$parentTextDelay" inherits="GameFontNormal" text="今晚走出了第一步,我的第一个魔兽世界插件。"> 
             <Anchors> 
-               <Anchor point="TOPLEFT" relativeTo="HelloWorldTestFrame" > 
+               <Anchor point="TOPLEFT" relativeTo="WowNoteFrame" > 
                 <Offset x="15" y="-30" /> 
                  </Anchor> 
             </Anchors> 
@@ -30,14 +30,24 @@
 
            <FontString  name="$parentTextMoney" inherits="GameFontNormal" text="这一刻是过去游戏以玩为主的终点，现在是研究背后技术的起点"> 
             <Anchors> 
-               <Anchor point="TOPLEFT" relativeTo="HelloWorldTestFrame" > 
+               <Anchor point="TOPLEFT" relativeTo="WowNoteFrame" > 
                 <Offset x="15" y="-45" /> 
                  </Anchor> 
             </Anchors> 
          </FontString>
+
+          <FontString  name="$parentTextNote"  inherits="GameFontNormal" text=""> 
+            <Anchors> 
+               <Anchor point="TOPLEFT" relativeTo="WowNoteFrame" > 
+                <Offset x="15" y="-60" /> 
+                 </Anchor> 
+            </Anchors> 
+         </FontString>
+
+
          <FontString inherits="GameFontNormal" size="20" text="吴文付"> 
             <Anchors> 
-               <Anchor point="CENTER" relativeTo="HelloWorldTestFrame" > 
+               <Anchor point="CENTER" relativeTo="WowNoteFrame" > 
                  </Anchor> 
             </Anchors> 
          </FontString>
@@ -46,18 +56,14 @@
 
     <Scripts> 
       <OnLoad> 
-        this:RegisterEvent("CHAT_MSG_SAY");
-        this:RegisterEvent("PLAYER_TARGET_CHANGED");
-        this:RegisterEvent("LOOT_OPEN");
-        this:RegisterEvent("BAG_UPDATE");
-      HelloWorldLoad(); 
+      Wownote_Load(); 
       </OnLoad> 
       <OnUpdate> 
-      HelloWorldFrameUpdate(); 
+      Wownote_Update(); 
       </OnUpdate> 
 
       <OnEvent> 
-   HelloWorldEvent(); 
+   Wownote_Event(); 
 </OnEvent>
 
 
