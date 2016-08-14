@@ -1,194 +1,163 @@
-local t ={}
+IGAS:NewAddon "WowNote" 
+
+---------------------------------------------- 
+-- Logger 
+---------------------------------------------- 
+Log = System.Logger("WowNote") 
+Debug = Log:SetPrefix(1, System.Widget.FontColor.GRAY .. _Name .."[Debug]", true) 
+Info = Log:SetPrefix(2, System.Widget.FontColor.HIGHLIGHT .. _Name .."[Info]", true) 
+Warn = Log:SetPrefix(3, System.Widget.FontColor.RED .. _Name .."[Warn]", true) 
+Log.LogLevel = 1 
+Log:AddHandler(print)
+Log.TimeFormat = "%X"
 
 
----------------------------------------------------------------------------------------------------------
---[[初始化]]--
-function Wownote_Load()
-	--注册事件
-	Wownote_Register()
-	--添加命令
-	Wownote_Slashcmd()
-
-
-	DEFAULT_CHAT_FRAME:AddMessage("Wownote_Frame is Loaded!");
+local date = date or os.date
 
 
 
-	 
+---------------------------------------------- 
+-- Script Handlers 
+---------------------------------------------- 
+function OnLoad(self) 
+   -- Load SavedVariables 
+   _DB = self:AddSavedVariable("WowNoteSave")
+
+   -- WowNoteSave={}
+   
+   -- Load the Log Level 
+   if _DB.LogLevel then 
+      Log.LogLevel = _DB.LogLevel 
+   end 
+   -- Slash command 
+   self:AddSlashCmd("/wn", "/wownote") 
+   -- Register Events 
+   -- self:RegisterEvent("CHAT_MSG_CHANNEL")  --频道：世界，综合，本地防务
+
+   self:RegisterEvent("CHAT_MSG_WHISPER_INFORM")  --密语触发。发送时。
+   self:RegisterEvent("CHAT_MSG_WHISPER")  --密语触发。接受时。
+   
+   self:RegisterEvent("ZONE_CHANGED")  --区域变化时。
+
+   self:RegisterEvent("CHAT_MSG_PARTY")  --小队。
+
+
+
+
+end 
+
+function OnSlashCmd(self, option, info) 
+   if not option then return end 
+   if option:lower() == "log" and tonumber(info) then 
+      info = math.floor(tonumber(info)) 
+      if info <= 0 then return end 
+      Log.LogLevel = info 
+      _DB.LogLevel = info -- keep the log level 
+   elseif option:lower() == "start" then 
+      _Enabled = true 
+   elseif option:lower() == "stop" then 
+      _Enabled = false 
+   end 
+end 
+
+function OnEnable(self) 
+   Debug("%s is Enabled!!", _Name) 
+end 
+
+function OnDisable(self) 
+   Debug("%s is Disabled!!", _Name) 
+end 
+
+---------------------------------------------- 
+-- Events 
+---------------------------------------------- 
+function CHAT_MSG_WHISPER_INFORM(self,message,receiver,language,channelString,target, ...)
+   -- body
+
+   Debug("[私聊]["..date("%X").."]["..receiver.."]:"..message)
+   table.insert(WowNoteSave, "[私聊]["..date("%X").."]["..receiver.."]:"..message)
+   DEFAULT_CHAT_FRAME:AddMessage(receiver.." said "..message)
+   DEFAULT_CHAT_FRAME:AddMessage("language="..language.." channelString ="..channelString.." target="..target)
 end
 
---[[注册事件]]--
-function Wownote_Register()
-	-- Wownote_Frame = getglobal("WowNoteFrame"); 
-	WowNoteFrame:RegisterEvent("CHAT_MSG_SAY");--说话事件
-	WowNoteFrame:RegisterEvent("PLAYER_TARGET_CHANGED");--目标切换事件
-	WowNoteFrame:RegisterEvent("LOOT_OPEN");--拾取物品事件
-	WowNoteFrame:RegisterEvent("BAG_UPDATE");--背包更新 
+function CHAT_MSG_WHISPER(self,message,sender,language,channelString,target, ...)
+   -- body
+   Debug("[私聊]["..date("%X").."][我]:"..message)
+   table.insert(WowNoteSave, "[私聊]["..date("%X").."][我]:"..message)
+   DEFAULT_CHAT_FRAME:AddMessage(sender.." said "..message)
+   DEFAULT_CHAT_FRAME:AddMessage("language="..language.." channelString ="..channelString.." target="..target)
 end
 
---[[命令列表]]--
-function Wownote_Slashcmd()
-	-- 显示插件面板
-	SLASH_WOWNOTE1 = "/wownote"; 
-	SLASH_WOWNOTE2 = "/wn"; 
-	--输出数据
-	SlashCmdList["WOWNOTE"] = Wownote_Cmd;
-
-end
---[[隐藏或显示面板]]--
-function Wownote_Cmd(input)
-	 
-   	myFrame = getglobal("WowNoteFrame");
-
-   	--显示面板
-   	if(input =='' or input =='show') then
-	   	Wownote_Display(myFrame,true)
-	   	return
-   	end
-   --隐藏面板
-   	if(input =='hidden') then
-	   	Wownote_Display(myFrame,false)
-	   	return
-   	end
-   	--打印数据
-   	if(input =='showdata') then
-   		Wownote_Readdata()
-   		return
-   	end
-   	--保存数据到文件
-   	if(input=="export") then
-   		Wownote_Savedata2File()
-   		return
-   	end
-   	--获得帮助
-   	if(input =='help') then
-	   	Wownote_Help()
-	   	return
-   	end
-   	--其他信息
-   	DEFAULT_CHAT_FRAME:AddMessage('没有该命令，请输入/wn help 或/wownote help寻求帮助');
-   	-- Wownote_Display(myFrame)
-end
---[[显示或隐藏面板]]
-function Wownote_Display(myFrame,isshow)
-	-- body
-	if(isshow) then 
-		myFrame:Show(); 
-	else 
-		myFrame:Hide(); 
-	end 
-end
---[[显示帮助。命令列表]]
-function Wownote_Help()
-	-- body
-	DEFAULT_CHAT_FRAME:AddMessage('命令列表如下');
-	DEFAULT_CHAT_FRAME:AddMessage('/wn display or /wownote display 显示或隐藏插件面板');
+function CHAT_MSG_PARTY(self,message,sender,language,channelString,target, ...)
+   -- body
+   Debug("[小队]["..date("%X").."]["..receiver.."]:"..message)
+   table.insert(WowNoteSave, "[小队]["..date("%X").."]["..receiver.."]:"..message)
+   DEFAULT_CHAT_FRAME:AddMessage(sender.." said "..message)
+   DEFAULT_CHAT_FRAME:AddMessage("language="..language.." channelString ="..channelString.." target="..target)
 end
 
+function ZONE_CHANGED(self)
+   -- body
+   Debug("This is a debug message.")
 
---[[事件关联函数]]--
-function Wownote_Event()
--- 说话事件 
-   if(event == "CHAT_MSG_SAY") then 
-      Wownote_CopySay()
-      return
+   local zoneText = GetMinimapZoneText()
+   table.insert(WowNoteSave, "[位置]["..date("%X").."]:"..zoneText)
+
+   if ( IsInRaid()  ) then
+      kind = "RAID";
+   elseif ( IsInGroup()  ) then
+      kind = "PARTY";
+   else
+      kind = 'SOLO'
    end
-   -- 目标改变事件
-   if(event == "PLAYER_TARGET_CHANGED") then 
-		Wownote_TipTarget()
-		return
+
+   raidNames=''
+   partyNames=''
+
+   local nRaid = GetNumGroupMembers();
+   local nParty = GetNumSubgroupMembers();
+
+   if ( kind ) then
+      if ( kind == "RAID" ) then
+         start = 1;
+         stop = nRaid;
+         for i=start,stop,1
+         do 
+            raidNames = raidNames..GetRaidRosterInfo(i)..','
+         end
+
+         table.insert(WowNoteSave, "[团队人数]"..nRaid.."名单:"..raidNames)
+         debug("[当前团队模式,人数]"..nRaid.."名单:"..raidNames)
+      else
+         if ( kind == "SOLO"  ) then
+            start = 0;
+         else
+            start = 1;
+         end
+         stop = nParty;
+
+         x = GetHomePartyInfo()
+         if(x) then
+            for i=start,stop,1
+            do 
+               partyNames = partyNames..x[i]..','
+            end
+            table.insert(WowNoteSave, "[小队人数]"..nParty.."名单:"..partyNames)
+            debug("[当前小队模式，人数]"..nParty.."名单:"..partyNames)
+
+
+         end
+        
+      end
    end
-
-   if ( event == "LOOT_OPENED" ) then
-		Wownote_HandleLoot();
-		return;
-	end
+   
+   -- DEFAULT_CHAT_FRAME:AddMessage("[位置变化]"..date("%c").."进入:"..zoneText)
+   -- DEFAULT_CHAT_FRAME:AddMessage("language="..language.." channelString ="..channelString.." target="..target)
 end
 
---[[重复自己说的话]]
-function Wownote_CopySay( ... )
-	-- body
-	 DEFAULT_CHAT_FRAME:AddMessage(arg2.." said "..arg1);
-end
---[[提示当前目标]]--
-function Wownote_TipTarget( ... )
-	-- body
-	local targetName  = UnitName("target");
-	--判断是否存在目标
-	if(targetName) then
-  		DEFAULT_CHAT_FRAME:AddMessage("你看着："..targetName);
-  		Wownote_Savedata(targetName)
-
-  	else
-  		DEFAULT_CHAT_FRAME:AddMessage("你没有目标"); 
-	end	
-end
-
---[[状态数据更新]]
-function Wownote_Update() 
-   textFPS = getglobal("WowNoteFrameTextFPS"); 
-   textDelay = getglobal("WowNoteFrameTextDelay"); 
-   textMoney = getglobal("WowNoteFrameTextMoney"); 
-   down, up, lag = GetNetStats();
 
 
-  
 
-   textFPS:SetText(date("%Y年%m月%d日:").."FPS   "..floor(GetFramerate())); 
-   textDelay:SetText("Delay   "..lag.." ms"); 
-   textMoney:SetText("Money   "..floor(GetMoney()/10000).." G"); 
-end
 
---[[拾取物品]]--
-function Wownote_HandleLoot()
-	local lootIcon; --图标
-	local lootName; --名称
-	local lootQuantity; --数量
-	local rarity;--罕见度。绿色 蓝色 紫色
-
-	local itemid;
-	local enchant;
-	local subid;
-	local itemname;	
-	local itemreadme;
-	for index = 1, GetNumLootItems(), 1 do
-		if (LootSlotIsItem(index)) then
-			lootIcon, lootName, lootQuantity, rarity = GetLootSlotInfo(index);
-			DEFAULT_CHAT_FRAME:AddMessage("物品"..index..":"..lootName.."罕见度:"..rarity); 
-			
-		end
-    end
-end;
-
---[[存储数据:内存中]]
-function Wownote_Savedata(data)
-	-- body
-	table.insert(t,data)
-end
---[[读取数据]]
-function Wownote_Readdata()
-	if (table.getn(t) == 0) then
-		DEFAULT_CHAT_FRAME:AddMessage("没有数据");
-		return 
-	end
-	for i=1,table.getn(t),1 do
-		DEFAULT_CHAT_FRAME:AddMessage("数据"..i.."姓名:"..t[i]);
-	end
-end
---[[存储数据:文件中]]
-function Wownote_Savedata2File()
-	-- body
-	myFile = io.open("save_data.lua", "w+")
-	if myFile ~= nil then
-		myFile:write("-- 游戏数据保存文件")
-		myFile:write(string.char (10))
-		myFile:write(string.char (10))
-		myFile:write(string.format("%s%s", "-- 文件创建于: ", date()))
-		myFile:write(string.char (10))
-		myFile:write(string.char (10))
-		myFile:write("myValue = 5")
-		io.close(myFile)
-	end
-end
 
 

@@ -1,7 +1,11 @@
-## Interface: 11200
+## Interface: 70000
 ## Title: 魔兽笔记插件
 ## Author: hiphp
 ## Notes:记录游戏中的时间轴，玩家发生了哪些事情。
-## Version: 1.0 
-wownote.lua
-wownote.xml
+## Version: 1.0
+## Dependencies: IGAS 
+## DefaultState: Enabled 
+## LoadOnDemand: 0 
+## SavedVariables: WowNoteSave 
+WowNote.lua
+##wownote.xml
