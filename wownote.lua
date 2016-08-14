@@ -12,7 +12,17 @@ Log:AddHandler(print)
 Log.TimeFormat = "%X"
 
 
-local date = date or os.date
+date = date or os.date
+
+
+--间隔时间。获取地区、世界频道、团队成员.10分钟弄个获取一次。
+local IntervalTime = 1*10
+
+local LastRun = 0
+
+
+
+
 
 
 
@@ -40,6 +50,9 @@ function OnLoad(self)
    self:RegisterEvent("ZONE_CHANGED")  --区域变化时。
 
    self:RegisterEvent("CHAT_MSG_PARTY")  --小队。
+   self:RegisterEvent("CHAT_MSG_PARTY_LEADER")  --队长发言事件
+
+   self:RegisterEvent("PLAYER_STOPPED_MOVING")  --用户移动事件
 
 
 
@@ -71,37 +84,61 @@ end
 ---------------------------------------------- 
 -- Events 
 ---------------------------------------------- 
+
+
+
 function CHAT_MSG_WHISPER_INFORM(self,message,receiver,language,channelString,target, ...)
    -- body
 
    Debug("[私聊]["..date("%X").."]["..receiver.."]:"..message)
    table.insert(WowNoteSave, "[私聊]["..date("%X").."]["..receiver.."]:"..message)
-   DEFAULT_CHAT_FRAME:AddMessage(receiver.." said "..message)
-   DEFAULT_CHAT_FRAME:AddMessage("language="..language.." channelString ="..channelString.." target="..target)
+   -- DEFAULT_CHAT_FRAME:AddMessage(receiver.." said "..message)
+   -- DEFAULT_CHAT_FRAME:AddMessage("language="..language.." channelString ="..channelString.." target="..target)
 end
 
 function CHAT_MSG_WHISPER(self,message,sender,language,channelString,target, ...)
    -- body
    Debug("[私聊]["..date("%X").."][我]:"..message)
    table.insert(WowNoteSave, "[私聊]["..date("%X").."][我]:"..message)
-   DEFAULT_CHAT_FRAME:AddMessage(sender.." said "..message)
-   DEFAULT_CHAT_FRAME:AddMessage("language="..language.." channelString ="..channelString.." target="..target)
+   -- DEFAULT_CHAT_FRAME:AddMessage(sender.." said "..message)
+   -- DEFAULT_CHAT_FRAME:AddMessage("language="..language.." channelString ="..channelString.." target="..target)
 end
 
 function CHAT_MSG_PARTY(self,message,sender,language,channelString,target, ...)
    -- body
-   Debug("[小队]["..date("%X").."]["..receiver.."]:"..message)
-   table.insert(WowNoteSave, "[小队]["..date("%X").."]["..receiver.."]:"..message)
-   DEFAULT_CHAT_FRAME:AddMessage(sender.." said "..message)
-   DEFAULT_CHAT_FRAME:AddMessage("language="..language.." channelString ="..channelString.." target="..target)
+   Debug("[小队]["..date("%X").."]["..sender.."]:"..message)
+   table.insert(WowNoteSave, "[小队]["..date("%X").."]["..sender.."]:"..message)
+   -- DEFAULT_CHAT_FRAME:AddMessage(sender.." said "..message)
+   -- DEFAULT_CHAT_FRAME:AddMessage("language="..language.." channelString ="..channelString.." target="..target)
 end
 
-function ZONE_CHANGED(self)
+function CHAT_MSG_PARTY_LEADER(self,message,sender,language,channelString,target, ...)
    -- body
-   Debug("This is a debug message.")
+   Debug("[小队]["..date("%X").."]["..sender.."]:"..message)
+   table.insert(WowNoteSave, "[小队]["..date("%X").."]["..sender.."]:"..message)
+   -- DEFAULT_CHAT_FRAME:AddMessage(sender.." said "..message)
+   -- DEFAULT_CHAT_FRAME:AddMessage("language="..language.." channelString ="..channelString.." target="..target)
+end
+
+
+
+-- function ZONE_CHANGED(self)
+function PLAYER_STOPPED_MOVING(self)
+   -- body
+   --比较下时间。如果时间超过10分钟。则记录一次。
+   Debug('%s',time())
+   Debug('%s',LastRun)
+   if (time() - LastRun < IntervalTime) then
+      Debug('间隔时间低于10分钟')
+      return 
+   end
+
+   LastRun = time()
+
 
    local zoneText = GetMinimapZoneText()
    table.insert(WowNoteSave, "[位置]["..date("%X").."]:"..zoneText)
+   Debug("[位置]["..date("%X").."]:"..zoneText)
 
    if ( IsInRaid()  ) then
       kind = "RAID";
@@ -126,8 +163,8 @@ function ZONE_CHANGED(self)
             raidNames = raidNames..GetRaidRosterInfo(i)..','
          end
 
-         table.insert(WowNoteSave, "[团队人数]"..nRaid.."名单:"..raidNames)
-         debug("[当前团队模式,人数]"..nRaid.."名单:"..raidNames)
+         table.insert(WowNoteSave, "[团队]"..nRaid.."名单:"..raidNames)
+         Debug("[团队]"..nRaid.."名单:"..raidNames)
       else
          if ( kind == "SOLO"  ) then
             start = 0;
@@ -142,17 +179,15 @@ function ZONE_CHANGED(self)
             do 
                partyNames = partyNames..x[i]..','
             end
-            table.insert(WowNoteSave, "[小队人数]"..nParty.."名单:"..partyNames)
-            debug("[当前小队模式，人数]"..nParty.."名单:"..partyNames)
-
+            table.insert(WowNoteSave, "[小队]"..nParty.."名单:"..partyNames)
+            Debug("[小队]"..nParty.."名单:"..partyNames)
+         else
+            Debug("[个人]only you!")
 
          end
         
       end
    end
-   
-   -- DEFAULT_CHAT_FRAME:AddMessage("[位置变化]"..date("%c").."进入:"..zoneText)
-   -- DEFAULT_CHAT_FRAME:AddMessage("language="..language.." channelString ="..channelString.." target="..target)
 end
 
 
