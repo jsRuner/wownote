@@ -6,6 +6,6 @@
 ## Dependencies: IGAS 
 ## DefaultState: Enabled 
 ## LoadOnDemand: 0 
-## SavedVariables: WowNoteSave
+## SavedVariables: WowNoteSave,WowNoteConfig
 WowNote.lua
 ##wownote.xml
