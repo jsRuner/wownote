@@ -7,6 +7,7 @@ Debug = Log:SetPrefix(1, System.Widget.FontColor.GRAY .. _Name .."[Debug]", true
 Info = Log:SetPrefix(2, System.Widget.FontColor.HIGHLIGHT .. _Name .."[Info]", true) 
 Warn = Log:SetPrefix(3, System.Widget.FontColor.RED .. _Name .."[Warn]", true) 
 Log.LogLevel = 2
+
 Log:AddHandler(print)
 Log.TimeFormat = "%X"
 ---------------------------------------------- 
